@@ -75,3 +75,7 @@ class User(AbstractBaseUser, AbstractManager):
     @property
     def name(self):
         return f"{self.first_name} {self.last_name}"
+    
+    @name.setter
+    def name(self, value):
+        pass
