@@ -37,7 +37,7 @@ function Post(props) {
 
     const handleLikeClick = (action) => {
         axiosService
-            .post(`/api/post/${post.id}/${action}/`, {
+            .post(`/post/${post.id}/${action}/`, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
