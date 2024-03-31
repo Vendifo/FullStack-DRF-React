@@ -92,6 +92,7 @@ function CreatePost(props) {
                         Post
                     </Button>
                 </Modal.Footer>
+                
             </Modal>
             <Toaster
                 title="Post!"
