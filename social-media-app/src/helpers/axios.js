@@ -2,7 +2,7 @@ import axios from "axios";
 import createaxiosRefreshInterceptor from "axios-auth-refresh";
 
 const axiosService = axios.create({
-    baseURL: "http://localhost:8000",
+    baseURL: "http://localhost:8000/api/",
     headers : {
         "Content-Type": "aplication/json"
     },
