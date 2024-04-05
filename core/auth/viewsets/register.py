@@ -3,7 +3,8 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from core.auth.serializers.register import RegisterSerializer
+from core.auth.serializers import RegisterSerializer
+
 
 class RegisterViewSet(ViewSet):
     serializer_class = RegisterSerializer
@@ -24,5 +25,5 @@ class RegisterViewSet(ViewSet):
         return Response({
             "user": serializer.data,
             "refresh": res["refresh"],
-            "token": res["access"]
+            "access": res["access"]
         }, status=status.HTTP_201_CREATED)

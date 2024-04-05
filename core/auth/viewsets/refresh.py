@@ -17,5 +17,5 @@ class RefreshViewSet(viewsets.ViewSet, TokenRefreshView):
             serializer.is_valid(raise_exception=True)
         except TokenError as e:
             raise InvalidToken(e.args[0])
-        
+
         return Response(serializer.validated_data, status=status.HTTP_200_OK)

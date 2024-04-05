@@ -1,19 +1,20 @@
 import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
-function RegistrationFrom() {
-    const navigate = useNavigate();
+import { useUserActions } from "../../hooks/user.actions";
+
+function RegistrationForm() {
     const [validated, setValidated] = useState(false);
     const [form, setForm] = useState({
         username: "",
-        password: "",
         email: "",
+        password: "",
         first_name: "",
-        last_name: ""
+        last_name: "",
+        bio: "",
     });
     const [error, setError] = useState(null);
+    const userActions = useUserActions();
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -31,25 +32,14 @@ function RegistrationFrom() {
             email: form.email,
             first_name: form.first_name,
             last_name: form.last_name,
+            bio: form.bio,
         };
 
-        axios
-            .post("http://localhost:8000/api/auth/register/", data)
-            .then((res) => {
-                localStorage.setItem("auth", JSON.stringify({
-                    access: res.data.access,
-                    refresh: res.data.refresh,
-                    user: res.data.user,
-                }));
-
-                navigate("/");
-            })
-            .catch((err) => {
-                if (err.messege) {
-                    setError(err.request.response);
-                }
-            });
-
+        userActions.register(data).catch((err) => {
+            if (err.message) {
+                setError(err.request.response);
+            }
+        });
     };
 
     return (
@@ -128,6 +118,17 @@ function RegistrationFrom() {
                 </Form.Control.Feedback>
             </Form.Group>
 
+            <Form.Group className="mb-3">
+                <Form.Label>Bio</Form.Label>
+                <Form.Control
+                    value={form.bio}
+                    onChange={(e) => setForm({ ...form, bio: e.target.value })}
+                    as="textarea"
+                    rows={3}
+                    placeholder="A simple bio ... (Optional)"
+                />
+            </Form.Group>
+
             <div className="text-content text-danger">{error && <p>{error}</p>}</div>
 
             <Button variant="primary" type="submit">
@@ -135,8 +136,6 @@ function RegistrationFrom() {
             </Button>
         </Form>
     );
-
 }
 
-
-export default RegistrationFrom;
+export default RegistrationForm;
