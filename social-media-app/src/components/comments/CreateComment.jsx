@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useContext } from "react";
 import { Button, Form, Image } from "react-bootstrap";
 import axiosService from "../../helpers/axios";

@@ -1,5 +1,5 @@
 
-
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -136,8 +136,8 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 # Media files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'uploads'
 
 # Default avatar URL
 
