@@ -1,17 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 import axiosService from "../../helpers/axios";
 import { getUser } from "../../hooks/user.actions";
-import Toaster from "../Toaster";
+import { Context } from "../Layout";
+import { act } from 'react-dom/test-utils'; // Импортируем act из соответствующей библиотеки
 
 function CreatePost(props) {
     const { refresh } = props;
     const [show, setShow] = useState(false);
-    const [showToast, setShowToast] = useState(false);
-    const [toastMessage, setToastMessage] = useState("");
-    const [toastType, setToastType] = useState("");
     const [validated, setValidated] = useState(false);
-    const [form, setForm] = useState({});
+    const [form, setForm] = useState({
+        author: "",
+        body: "",
+    });
+
+    const { setToaster } = useContext(Context);
 
     const user = getUser();
 
@@ -34,25 +37,26 @@ function CreatePost(props) {
         };
 
         axiosService
-            .post("/post/", data, {
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
+            .post("/post/", data)
             .then(() => {
                 handleClose();
-                setToastMessage("Post created 🚀");
-                setToastType("success");
+                setToaster({
+                    type: "success",
+                    message: "Post created 🚀",
+                    show: true,
+                    title: "Post Success",
+                });
                 setForm({});
-                setShowToast(true);
                 refresh();
             })
             .catch(() => {
-                // Оставить блок catch пустым или добавить логику обработки ошибок, если необходимо
+                setToaster({
+                    type: "danger",
+                    message: "An error occurred.",
+                    show: true,
+                    title: "Post Error",
+                });
             });
-
-
-
     };
 
     return (
@@ -60,6 +64,7 @@ function CreatePost(props) {
             <Form.Group className="my-3 w-75">
                 <Form.Control
                     className="py-2 rounded-pill border-primary text-primary"
+                    data-testid="show-modal-form"
                     type="text"
                     placeholder="Write a post"
                     onClick={handleShow}
@@ -71,12 +76,22 @@ function CreatePost(props) {
                     <Modal.Title>Create Post</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="border-0">
-                    <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                    <Form
+                        noValidate
+                        validated={validated}
+                        onSubmit={handleSubmit}
+                        data-testid="create-post-form"
+                    >
                         <Form.Group className="mb-3">
                             <Form.Control
                                 name="body"
+                                data-testid="post-body-field"
                                 value={form.body}
-                                onChange={(e) => setForm({ ...form, body: e.target.value })}
+                                onChange={(e) =>
+                                    act(() => {
+                                        setForm({ ...form, body: e.target.value });
+                                    })
+                                }
                                 as="textarea"
                                 rows={3}
                             />
@@ -87,20 +102,13 @@ function CreatePost(props) {
                     <Button
                         variant="primary"
                         onClick={handleSubmit}
-                        disabled={form.body === undefined}
+                        disabled={!form.body}
+                        data-testid="create-post-submit"
                     >
                         Post
                     </Button>
                 </Modal.Footer>
-                
             </Modal>
-            <Toaster
-                title="Post!"
-                message={toastMessage}
-                showToast={showToast}
-                type={toastType}
-                onClose={() => setShowToast(false)}
-            />
         </>
     );
 }

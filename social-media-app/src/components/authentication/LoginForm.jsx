@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
+import { act } from 'react-dom/test-utils'; // Импорт функции act из react-dom/test-utils
 
 import { useUserActions } from "../../hooks/user.actions";
 
@@ -27,10 +28,24 @@ function LoginForm() {
             password: form.password,
         };
 
-        userActions.login(data).catch((err) => {
-            if (err.message) {
-                setError(err.request.response);
-            }
+        act(() => { // Обертка вызова setValidated в act(...)
+            userActions.login(data).catch((err) => {
+                if (err.message) {
+                    setError(err.request.response);
+                }
+            });
+        });
+    };
+
+    const handleUsernameChange = (e) => {
+        act(() => { // Обертка вызова setForm в act(...)
+            setForm({ ...form, username: e.target.value });
+        });
+    };
+
+    const handlePasswordChange = (e) => {
+        act(() => { // Обертка вызова setForm в act(...)
+            setForm({ ...form, password: e.target.value });
         });
     };
 
@@ -41,12 +56,14 @@ function LoginForm() {
             noValidate
             validated={validated}
             onSubmit={handleSubmit}
+            data-testid="login-form"
         >
             <Form.Group className="mb-3">
                 <Form.Label>Username</Form.Label>
                 <Form.Control
                     value={form.username}
-                    onChange={(e) => setForm({ ...form, username: e.target.value })}
+                    data-testid="username-field"
+                    onChange={handleUsernameChange}
                     required
                     type="text"
                     placeholder="Enter username"
@@ -60,8 +77,9 @@ function LoginForm() {
                 <Form.Label>Password</Form.Label>
                 <Form.Control
                     value={form.password}
+                    data-testid="password-field"
                     minLength="8"
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    onChange={handlePasswordChange}
                     required
                     type="password"
                     placeholder="Password"
@@ -73,7 +91,11 @@ function LoginForm() {
 
             <div className="text-content text-danger">{error && <p>{error}</p>}</div>
 
-            <Button variant="primary" type="submit">
+            <Button
+                disabled={!form.password || !form.username}
+                variant="primary"
+                type="submit"
+            >
                 Submit
             </Button>
         </Form>
